@@ -12,4 +12,4 @@ target/
 
 # Environments
 .env
-indexweb-venv/
+.indexweb-venv/
