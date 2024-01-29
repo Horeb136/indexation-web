@@ -6,17 +6,22 @@ from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 import random
 import ssl
+import sqlite3
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
 class Crawler : 
-    def __init__(self, start_url, max_urls = 150, politeness_delay = 5) : 
+    def __init__(self, start_url, max_urls = 50, politeness_delay = 5, db_name = "crawler_db.sqlite") : 
         self.start_url = start_url 
         self.max_urls = max_urls 
         self.politeness_delay = politeness_delay 
         self.visited_urls = set() 
         self.to_visit_urls = [start_url]
         self.crawled_urls = []
+        self.last_page_download_time = 0
+        #Initialiser la connexion à la base de données
+        self.conn = sqlite3.connect(db_name)
+        self.create_table()
 
     def can_crawl(self, base_url) :
         if base_url.startswith("mailto:") :
@@ -31,15 +36,33 @@ class Crawler :
     
     def fetch_page(self, url) : 
         try : 
+            start_time = time.time()
             response = requests.get(url)
+            end_time = time.time()
             if response.status_code == 200 : 
+                self.last_page_dowload_time = end_time - start_time
                 return response.text
             else : 
                 return None
         except Exception as e :
             print(f"Error fetching page : {e}")
             return None
+    
+    def fetch_sitemap(self, base_url) : 
+        sitemap_url = urljoin(base_url, "/sitemap.xml")
+        try :
+            response = requests.get(sitemap_url)
+            if response.status_code == 200 :
+                tree = ET.fromstring(response.text)
+                urls = [url.text for url in tree.findall('.//{http://www.sitemaps.org/schemas/sitemap/0.9}loc')]
+                return urls
+        except Exception as e :
+            print(f"Error fetching sitemap : {e}")
+            return []
         
+        
+
+
     def extract_links(self, html_contents):
         random.seed(229)
         soup = BeautifulSoup(html_contents, 'html.parser')
@@ -58,7 +81,7 @@ class Crawler :
                 print(f"Writing {url} in crawled_webpages.txt")
 
     def crawl(self) :
-        #print(f"Sites to visites : \n {self.to_visit_urls}")
+        #print(f"Sites to visit : \n {self.to_visit_urls}")
         while self.to_visit_urls and len(self.visited_urls) < self.max_urls :
             current_url = self.to_visit_urls.pop(0)
 
@@ -72,10 +95,20 @@ class Crawler :
                     if html_contents : 
                         self.extract_links(html_contents)
                         self.visited_urls.add(current_url)
-                        self.extract_links(html_contents)
                         print(f"Visited URLs : {len(self.visited_urls)}")
+                        print(f"To visit URLs : {len(self.to_visit_urls)}")
 
-                        time.sleep(self.politeness_delay)
+                        # Fetch and add URLs from sitemap
+                        sitemap_urls = self.fetch_sitemap(current_url)
+                        for sitemap_url in sitemap_urls :
+                            #print(f"Fetching sitemap for {sitemap_url} ... ")
+                            if sitemap_url not in self.visited_urls and sitemap_url not in self.to_visit_urls :
+                                self.to_visit_urls.append(sitemap_url)
+                        print(f"To visit URLs after sitemap : {len(self.to_visit_urls)}")
+
+                        # Adjust politeness delay based on the last page download time
+                        adjusted_delay = max(self.politeness_delay, self.last_page_download_time * 2)
+                        time.sleep(adjusted_delay)
             #print(f"Sites to visites : \n {self.to_visit_urls}")
         self.write_to_file()
     
