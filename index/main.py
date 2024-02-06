@@ -8,7 +8,7 @@ def main():
 
     # Initialiser l'indexeur
     indexer = WebIndexer()
-
+    
     # Construire l'index et obtenir les statistiques globales
     indexer.build_positional_index_title(crawled_urls)
 

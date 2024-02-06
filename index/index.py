@@ -11,13 +11,13 @@ class WebIndexer():
     def extract_tokens(self, text): 
         return re.findall(r'\b\w+\b', text.lower())
     
-    # Definition du constructeur d'index de titres
+    # Définition de la construction d'un index non positionnel pour les titres
     def build_non_pos_index_title(self, crawled_urls) : 
         num_documents = len(crawled_urls)
         self.index = defaultdict(list)
 
         for doc_id, doc, in enumerate(crawled_urls) :
-            print(f"Indexing title of document of url {doc['url']}")    
+            print(f"Indexation du titre du document de l'url {doc['url']}")    
 
             title_tokens = self.extract_tokens(doc['title'])
 
@@ -25,7 +25,7 @@ class WebIndexer():
                 'document_id' : doc_id, 
                 'title_tokens' : len(title_tokens),
             }
-            print(f"Document title stats : {doc_stats}")
+            print(f"Statistiques du titre du document : {doc_stats}")
             self.document_stats.append(doc_stats)
 
             for token in title_tokens :
@@ -41,29 +41,29 @@ class WebIndexer():
             'total_title_tokens' : num_tokens,
             'avg_title_tokens_per_doc' : avg_tokens_per_doc
         }
-        print(f"Global stats : {global_stats}")
+        print(f"Statistiques globales : {global_stats}")
 
         final_stats = {
             "global_title_statistics" : global_stats,
             "document_title_statistics" : self.document_stats,
         }
 
-            # Sauvegarder l'index dans un fichier JSON
+        # Sauvegarder l'index dans un fichier JSON
         with open("title.non_pos_index.json", "w") as index_file:
             json.dump(self.index, index_file, separators=(',', ':'), ensure_ascii=False)
 
         with open("metadata.json", "w") as metadata_file:
             json.dump(final_stats, metadata_file, indent=2)
 
-        print("Indexing complete.")
+        print("Indexation terminée.")
 
-    # Definition du constructeur d'index de h1 d'articles
+    # Définition de la construction d'un index non positionnel pour les balises h1
     def build_non_pos_index_h1(self, crawled_urls) : 
         num_documents = len(crawled_urls)
         self.index = defaultdict(list)
 
         for doc_id, doc, in enumerate(crawled_urls) :
-            print(f"Indexing h1 of document of url {doc['url']}")    
+            print(f"Indexation des balises h1 du document de l'url {doc['url']}")    
 
             h1_tokens = self.extract_tokens(doc['h1'])
 
@@ -71,7 +71,7 @@ class WebIndexer():
                 'document_id' : doc_id, 
                 'h1_tokens' : len(h1_tokens),
             }
-            print(f"Document h1 stats : {doc_stats}")
+            print(f"Statistiques des balises h1 du document : {doc_stats}")
             self.document_stats.append(doc_stats)
 
             for token in h1_tokens :
@@ -87,29 +87,29 @@ class WebIndexer():
             'total_h1_tokens' : num_tokens,
             'avg_h1_tokens_per_doc' : avg_tokens_per_doc
         }
-        print(f"Global stats : {global_stats}")
+        print(f"Statistiques globales : {global_stats}")
 
         final_stats = {
             "global_h1_statistics" : global_stats,
             "document_h1_statistics" : self.document_stats,
         }
 
-            # Save index to file
+        # Sauvegarder l'index dans un fichier JSON
         with open("h1.non_pos_index.json", "w") as index_file:
             json.dump(self.index, index_file, indent=2)
 
         with open("metadata.json", "w") as metadata_file:
             json.dump(final_stats, metadata_file, separators=(',', ':'), ensure_ascii=False)
 
-        print("Indexing complete.")
+        print("Indexation terminée.")
 
-    # Definition du constructeur d'index de contenus d'articles
+    # Définition de la construction d'un index non positionnel pour les contenus
     def build_non_pos_index_content(self, crawled_urls) : 
         num_documents = len(crawled_urls)
         self.index = defaultdict(list)
 
         for doc_id, doc, in enumerate(crawled_urls) :
-            print(f"Indexing content of document of url {doc['url']}")    
+            print(f"Indexation du contenu du document de l'url {doc['url']}")    
 
             content_tokens = self.extract_tokens(doc['content'])
 
@@ -117,7 +117,7 @@ class WebIndexer():
                 'document_id' : doc_id, 
                 'content_tokens' : len(content_tokens),
             }
-            print(f"Document content stats : {doc_stats}")
+            print(f"Statistiques du contenu du document : {doc_stats}")
             self.document_stats.append(doc_stats)
 
             for token in content_tokens :
@@ -133,23 +133,23 @@ class WebIndexer():
             'total_content_tokens' : num_tokens,
             'avg_content_tokens_per_doc' : avg_tokens_per_doc
         }
-        print(f"Global stats : {global_stats}")
+        print(f"Statistiques globales : {global_stats}")
 
         final_stats = {
             "global_content_statistics" : global_stats,
             "document_content_statistics" : self.document_stats,
         }
 
-            # Save index to file
+        # Sauvegarder l'index dans un fichier JSON
         with open("content.non_pos_index.json", "w") as index_file:
             json.dump(self.index, index_file, separators=(',', ':'), ensure_ascii=False)
 
         with open("metadata.json", "w") as metadata_file:
             json.dump(final_stats, metadata_file, indent=2)
 
-        print("Indexing complete.")
+        print("Indexation terminée.")
 
-        #################### INDEX WITH STEMMER ####################
+    #################### INDEX AVEC STEMMER ####################
     def stem_tokens(self, tokens):
         stemmer = SnowballStemmer("french")
         return [stemmer.stem(token) for token in tokens]
@@ -159,7 +159,7 @@ class WebIndexer():
         self.index = defaultdict(list)
 
         for doc_id, doc, in enumerate(crawled_urls) :
-            print(f"Indexing title of document of url {doc['url']}")    
+            print(f"Indexation du titre du document de l'url {doc['url']}")    
 
             title_tokens = self.extract_tokens(doc['title'])
             stemmed_title_tokens = self.stem_tokens(title_tokens)
@@ -168,7 +168,7 @@ class WebIndexer():
                 'document_id' : doc_id, 
                 'title_tokens' : len(stemmed_title_tokens),
             }
-            print(f"Document title stats : {doc_stats}")
+            print(f"Statistiques du titre du document : {doc_stats}")
             self.document_stats.append(doc_stats)
 
             for token in stemmed_title_tokens :
@@ -184,7 +184,7 @@ class WebIndexer():
             'total_title_tokens' : num_tokens,
             'avg_title_tokens_per_doc' : avg_tokens_per_doc
         }
-        print(f"Global stats : {global_stats}")
+        print(f"Statistiques globales : {global_stats}")
 
         final_stats = {
             "global_title_statistics" : global_stats,
@@ -198,7 +198,7 @@ class WebIndexer():
         with open("metadata_stemmer.json", "w") as metadata_file:
             json.dump(final_stats, metadata_file, indent=2)
 
-        print("Indexing complete with stemming.")
+        print("Indexation terminée avec stemming.")
     
     ###################### INDEX POSITIONNEL ######################
     def build_positional_index_title(self, crawled_urls) : 
@@ -206,7 +206,7 @@ class WebIndexer():
         self.index = defaultdict(list)
 
         for doc_id, doc, in enumerate(crawled_urls) :
-            print(f"Indexing title of document of url {doc['url']}")    
+            print(f"Indexation du titre du document de l'url {doc['url']}")    
 
             title_tokens = self.extract_tokens(doc['title'])
             stemmed_title_tokens = self.stem_tokens(title_tokens)
@@ -215,7 +215,7 @@ class WebIndexer():
                 'document_id' : doc_id, 
                 'title_tokens' : len(stemmed_title_tokens),
             }
-            print(f"Document title stats : {doc_stats}")
+            print(f"Statistiques du titre du document : {doc_stats}")
             self.document_stats.append(doc_stats)
 
             for position, token in enumerate(stemmed_title_tokens):
@@ -230,7 +230,7 @@ class WebIndexer():
             'total_title_tokens' : num_tokens,
             'avg_title_tokens_per_doc' : avg_tokens_per_doc
         }
-        print(f"Global stats : {global_stats}")
+        print(f"Statistiques globales : {global_stats}")
 
         final_stats = {
             "global_title_statistics" : global_stats,
@@ -244,4 +244,4 @@ class WebIndexer():
         with open("metadata_pos.json", "w") as metadata_file:
             json.dump(final_stats, metadata_file, indent=2)
 
-        print("Positional indexing complete.")
+        print("Indexation positionnelle terminée.")
