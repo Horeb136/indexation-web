@@ -44,7 +44,8 @@ python main.py
  -  Index non positionnel pour le contenu : `content.non_pos_index.json`
  -  Index non positionnel avec stemming pour les titres : `mon_stemmer.title.non_pos_index.json`
  -  Index positionnel pour les titres : `title.pos_index.json`
-2. **Fichiers de Métadonnées** : Un fichier `metadata.json` est généré avec des statistiques globales et des statistiques spécifiques à chaque document: 
+2. **Fichiers de Métadonnées** : Un fichier `metadata.json` est généré avec des statistiques globales et des statistiques spécifiques à chaque document:
+    
 **Statistiques Globales**
 
 -    **Nombre de Documents :** Le nombre total de documents web analysés.
